@@ -1,7 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="DailyLog.MainPage">
+             x:Class="DailyLog.MainPage"
+             xmlns:viewmodel="clr-namespace:DailyLog.ViewModels"
+             x:DataType="viewmodel:DailyLogViewModel">
 
     <ScrollView>
         <VerticalStackLayout 
@@ -9,12 +11,7 @@
             Padding="30,0" 
             VerticalOptions="Center">
 
-            <!--<Image
-                Source="dotnet_bot.png"
-                SemanticProperties.Description="Cute dot net bot waving hi to you!"
-                HeightRequest="200"
-                HorizontalOptions="Center" />-->
-            <Label Text="Kaffe"/>
+            <Label Text="{Binding Coffea.Selection, StringFormat='Kaffe ({0})'}"/>
             <StackLayout Orientation="Horizontal"
                          RadioButtonGroup.GroupName="{Binding Coffea.GroupName}"
                          RadioButtonGroup.SelectedValue="{Binding Coffea.Selection}">
@@ -23,33 +20,39 @@
                 <RadioButton Value="2" Content="2"></RadioButton>
                 <RadioButton Value="3" Content="3"></RadioButton>
             </StackLayout>
-            <Label Text="Bastu"/>
+
+            <Label Text="{Binding Coffea.Selection, StringFormat='Kaffe ({0})'}"/>
+            <StackLayout Orientation="Horizontal"
+                         RadioButtonGroup.GroupName="{Binding Coffea.GroupName}"
+                         RadioButtonGroup.SelectedValue="{Binding Coffea.Selection}">
+                <RadioButton Value="0" Content="0"></RadioButton>
+                <RadioButton Value="1" Content="1"></RadioButton>
+                <RadioButton Value="2" Content="2"></RadioButton>
+                <RadioButton Value="3" Content="3"></RadioButton>
+            </StackLayout>
+
+            <Label Text="{Binding Sauna.Selection, StringFormat='Bastu ({0})'}"/>
             <StackLayout Orientation="Horizontal"
                          RadioButtonGroup.GroupName="{Binding Sauna.GroupName}"
                          RadioButtonGroup.SelectedValue="{Binding Sauna.Selection}">
                 <RadioButton Value="0" Content="0"></RadioButton>
                 <RadioButton Value="1" Content="1"></RadioButton>
                 <RadioButton Value="2" Content="2"></RadioButton>
+                <RadioButton Value="3" Content="3"></RadioButton>
             </StackLayout>
 
-            <!--<Label 
-                Text="Hello, World!"
-                SemanticProperties.HeadingLevel="Level1"
-                FontSize="32"
-                HorizontalOptions="Center" />
-            <Label 
-                Text="Welcome to .NET Multi-platform App UI"
-                SemanticProperties.HeadingLevel="Level2"
-                SemanticProperties.Description="Welcome to dot net Multi platform App U I"
-                FontSize="18"
-                HorizontalOptions="Center" /-->
+            <ActivityIndicator IsRunning="{Binding IsBusy}"
+                               VerticalOptions="Center" />
 
-            <Button 
-                Command="{Binding SaveCommand}"
-                Text="Spara"
-                SemanticProperties.Hint="Counts the number of times you click"
-                HorizontalOptions="Center" />
-
+            <StackLayout Orientation="Horizontal"
+                         Spacing="100">
+                <Button Command="{Binding SaveCommand}"
+                        Text="Spara"
+                        HorizontalOptions="Center" />
+                <Button Command="{Binding UpdateLogCommand}"
+                        Text="Hämta dagens"
+                        HorizontalOptions="Center" />
+            </StackLayout>
         </VerticalStackLayout>
     </ScrollView>
 

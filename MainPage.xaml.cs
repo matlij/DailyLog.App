@@ -12,9 +12,10 @@ public partial class MainPage : ContentPage
 		BindingContext = _viewModel = new DailyLogViewModel();
     }
 
-	private void OnSaveClicked(object sender, EventArgs e)
+	protected override async void OnAppearing()
 	{
-		SemanticScreenReader.Announce($"You have selected {_viewModel.Coffea.Selection}");
+		await _viewModel.Initialize();
+		base.OnAppearing();
 	}
 }
 

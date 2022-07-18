@@ -50,6 +50,7 @@
 
 	<ItemGroup>
 	  <PackageReference Include="Azure.Data.Tables" Version="12.6.0" />
+	  <PackageReference Include="CommunityToolkit.Mvvm" Version="8.0.0-preview4" />
 	</ItemGroup>
 
 	<ItemGroup>
