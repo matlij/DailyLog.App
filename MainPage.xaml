@@ -11,10 +11,10 @@
             Padding="30,0" 
             VerticalOptions="Center">
 
-            <Label Text="{Binding Coffea.Selection, StringFormat='Kaffe ({0})'}"/>
+            <Label Text="{Binding Health.Selection, StringFormat='Health ({0})'}"/>
             <StackLayout Orientation="Horizontal"
-                         RadioButtonGroup.GroupName="{Binding Coffea.GroupName}"
-                         RadioButtonGroup.SelectedValue="{Binding Coffea.Selection}">
+                         RadioButtonGroup.GroupName="{Binding Health.GroupName}"
+                         RadioButtonGroup.SelectedValue="{Binding Health.Selection}">
                 <RadioButton Value="0" Content="0"></RadioButton>
                 <RadioButton Value="1" Content="1"></RadioButton>
                 <RadioButton Value="2" Content="2"></RadioButton>
@@ -29,6 +29,16 @@
                 <RadioButton Value="1" Content="1"></RadioButton>
                 <RadioButton Value="2" Content="2"></RadioButton>
                 <RadioButton Value="3" Content="3"></RadioButton>
+            </StackLayout>
+
+            <Label Text="{Binding Training.Selection, StringFormat='Training ({0})'}"/>
+            <StackLayout Orientation="Horizontal"
+                         RadioButtonGroup.GroupName="{Binding Training.GroupName}"
+                         RadioButtonGroup.SelectedValue="{Binding Training.Selection}">
+                <RadioButton Value="1" Content="Running"></RadioButton>
+                <RadioButton Value="2" Content="Gym"></RadioButton>
+                <RadioButton Value="3" Content="Hiit"></RadioButton>
+                <RadioButton Value="4" Content="Yoga"></RadioButton>
             </StackLayout>
 
             <Label Text="{Binding Sauna.Selection, StringFormat='Bastu ({0})'}"/>

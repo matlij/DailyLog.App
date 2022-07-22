@@ -9,6 +9,7 @@ namespace DailyLog.Models
         public string RowKey { get; set; }
         public DateTimeOffset? Timestamp { get; set; }
         public ETag ETag { get; set; }
+        public TraningType Training { get; set; }
         public int Health { get; set; }
         public int Coffea { get; set; }
         public int Sauna { get; set; }

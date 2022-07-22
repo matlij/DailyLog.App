@@ -22,9 +22,9 @@ namespace DailyLog.ViewModels
         private readonly TableClient _tableClient;
 
         public RadioButtonViewModel Health { get; } = new RadioButtonViewModel() { GroupName = "Health" };
+        public RadioButtonViewModel Training { get; } = new RadioButtonViewModel() { GroupName = "Training" };
         public RadioButtonViewModel Coffea { get; } = new RadioButtonViewModel() { GroupName = "Coffea" };
         public RadioButtonViewModel Sauna { get; } = new RadioButtonViewModel() { GroupName = "Sauna" };
-
 
         [ObservableProperty]
         bool _isBusy;
@@ -40,6 +40,7 @@ namespace DailyLog.ViewModels
                 {
                     PartitionKey = PartitionKey,
                     RowKey = RowKey(),
+                    Training = (TraningType)int.Parse(Training.Selection.ToString()),
                     Coffea = int.Parse(Coffea.Selection.ToString()),
                     Sauna = int.Parse(Sauna.Selection.ToString()),
                 };
@@ -89,6 +90,7 @@ namespace DailyLog.ViewModels
             Health.Selection = result.Health.ToString();
             Coffea.Selection = result.Coffea.ToString();
             Sauna.Selection = result.Sauna.ToString();
+            Training.Selection = ((int)result.Training).ToString();
 
             IsBusy = false;
         }
@@ -102,7 +104,7 @@ namespace DailyLog.ViewModels
             }
             catch (Exception e)
             {
-                await Application.Current.MainPage.DisplayAlert("Error", $"Misslyckades med att hämta log. Error: {e.Message}", "OK");
+                Trace.WriteLine( $"Misslyckades med att hämta log. Error: {e.Message}");
             }
 
             return new LogEntity();
