@@ -1,69 +1,61 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+﻿<?xml version="1.0" encoding="UTF-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="DailyLog.MainPage"
              xmlns:viewmodel="clr-namespace:DailyLog.ViewModels"
              x:DataType="viewmodel:DailyLogViewModel">
 
-    <ScrollView>
-        <VerticalStackLayout 
-            Spacing="25" 
-            Padding="30,0" 
-            VerticalOptions="Center">
-
-            <Label Text="{Binding Health.Selection, StringFormat='Health ({0})'}"/>
+    <VerticalStackLayout VerticalOptions="Center">
+        <StackLayout Margin="0, 30">
+            <Label Text="Har du några symptom idag?"/>
             <StackLayout Orientation="Horizontal"
-                         RadioButtonGroup.GroupName="{Binding Health.GroupName}"
-                         RadioButtonGroup.SelectedValue="{Binding Health.Selection}">
-                <RadioButton Value="0" Content="0"></RadioButton>
-                <RadioButton Value="1" Content="1"></RadioButton>
-                <RadioButton Value="2" Content="2"></RadioButton>
-                <RadioButton Value="3" Content="3"></RadioButton>
+                         RadioButtonGroup.GroupName="{Binding Symptoms.GroupName}"
+                         RadioButtonGroup.SelectedValue="{Binding Symptoms.Selection}">
+                <RadioButton Value="0" Content="0"/>
+                <RadioButton Value="1" Content="1"/>
+                <RadioButton Value="2" Content="2"/>
+                <RadioButton Value="3" Content="3"/>
+                <RadioButton Value="4" Content="4"/>
             </StackLayout>
+        </StackLayout>
+        <ListView ItemsSource="{Binding RadioButtons}"
+                      SelectionMode="None"
+                      SeparatorVisibility="None">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <ViewCell x:DataType="viewmodel:RadioButtonViewModel">
+                        <StackLayout>
+                            <Label Text="{Binding GroupName}"/>
+                            <StackLayout Orientation="Horizontal"
+                                             RadioButtonGroup.GroupName="{Binding GroupName}"
+                                             RadioButtonGroup.SelectedValue="{Binding Selection}">
+                                <RadioButton Value="0" Content="{Binding Content[0]}"/>
+                                <RadioButton Value="1" Content="{Binding Content[1]}"/>
+                                <RadioButton Value="2" Content="{Binding Content[2]}"/>
+                                <RadioButton Value="3" Content="{Binding Content[3]}"/>
+                                <RadioButton Value="4" Content="{Binding Content[4]}"/>
+                            </StackLayout>
+                        </StackLayout>
+                    </ViewCell>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
 
-            <Label Text="{Binding Coffea.Selection, StringFormat='Kaffe ({0})'}"/>
-            <StackLayout Orientation="Horizontal"
-                         RadioButtonGroup.GroupName="{Binding Coffea.GroupName}"
-                         RadioButtonGroup.SelectedValue="{Binding Coffea.Selection}">
-                <RadioButton Value="0" Content="0"></RadioButton>
-                <RadioButton Value="1" Content="1"></RadioButton>
-                <RadioButton Value="2" Content="2"></RadioButton>
-                <RadioButton Value="3" Content="3"></RadioButton>
-            </StackLayout>
-
-            <Label Text="{Binding Training.Selection, StringFormat='Training ({0})'}"/>
-            <StackLayout Orientation="Horizontal"
-                         RadioButtonGroup.GroupName="{Binding Training.GroupName}"
-                         RadioButtonGroup.SelectedValue="{Binding Training.Selection}">
-                <RadioButton Value="1" Content="Running"></RadioButton>
-                <RadioButton Value="2" Content="Gym"></RadioButton>
-                <RadioButton Value="3" Content="Hiit"></RadioButton>
-                <RadioButton Value="4" Content="Yoga"></RadioButton>
-            </StackLayout>
-
-            <Label Text="{Binding Sauna.Selection, StringFormat='Bastu ({0})'}"/>
-            <StackLayout Orientation="Horizontal"
-                         RadioButtonGroup.GroupName="{Binding Sauna.GroupName}"
-                         RadioButtonGroup.SelectedValue="{Binding Sauna.Selection}">
-                <RadioButton Value="0" Content="0"></RadioButton>
-                <RadioButton Value="1" Content="1"></RadioButton>
-                <RadioButton Value="2" Content="2"></RadioButton>
-                <RadioButton Value="3" Content="3"></RadioButton>
-            </StackLayout>
-
-            <ActivityIndicator IsRunning="{Binding IsBusy}"
+        <ActivityIndicator IsRunning="{Binding IsBusy}"
                                VerticalOptions="Center" />
 
-            <StackLayout Orientation="Horizontal"
-                         Spacing="100">
-                <Button Command="{Binding SaveCommand}"
+        <StackLayout Orientation="Horizontal"
+                         Spacing="10">
+            <Button Command="{Binding SaveCommand}"
                         Text="Spara"
                         HorizontalOptions="Center" />
-                <Button Command="{Binding UpdateLogCommand}"
+            <Button Command="{Binding UpdateLogCommand}"
                         Text="Hämta dagens"
                         HorizontalOptions="Center" />
-            </StackLayout>
-        </VerticalStackLayout>
-    </ScrollView>
+            <Button Command="{Binding ReloadPageCommand}"
+                        Text="Reload Page"
+                        HorizontalOptions="Center" />
+        </StackLayout>
+    </VerticalStackLayout>
 
 </ContentPage>

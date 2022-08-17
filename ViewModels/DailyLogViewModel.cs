@@ -1,30 +1,24 @@
-﻿using Azure;
+﻿using AutoMapper;
 using Azure.Data.Tables;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DailyLog.Models;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Text.Json;
 
 namespace DailyLog.ViewModels
 {
-    public partial class RadioButtonViewModel : ObservableObject
-    {
-        [ObservableProperty]
-        string _groupName;
-
-        [ObservableProperty]
-        object _selection;
-    }
 
     public partial class DailyLogViewModel : ObservableObject
     {
         private const string PartitionKey = "Key";
-        private readonly TableClient _tableClient;
+        private readonly TableClient _logClient;
+        private readonly TableClient _surveyClient;
+        private readonly IMapper _mapper;
 
-        public RadioButtonViewModel Health { get; } = new RadioButtonViewModel() { GroupName = "Health" };
-        public RadioButtonViewModel Training { get; } = new RadioButtonViewModel() { GroupName = "Training" };
-        public RadioButtonViewModel Coffea { get; } = new RadioButtonViewModel() { GroupName = "Coffea" };
-        public RadioButtonViewModel Sauna { get; } = new RadioButtonViewModel() { GroupName = "Sauna" };
+        public RadioButtonViewModel Symptoms { get; set; } = new RadioButtonViewModel { GroupName = "Symptoms" };
+        public ObservableCollection<RadioButtonViewModel> RadioButtons { get; set; } = new ObservableCollection<RadioButtonViewModel>();
 
         [ObservableProperty]
         bool _isBusy;
@@ -36,22 +30,19 @@ namespace DailyLog.ViewModels
 
             try
             {
-                var entity = new LogEntity
+                var transactions = RadioButtons
+                    .Select(r => new TableTransactionAction(TableTransactionActionType.UpsertReplace, CreateLogValueEntity(r)))
+                    .ToList();
+                transactions.Add(new TableTransactionAction(TableTransactionActionType.UpsertReplace, CreateLogValueEntity(Symptoms)));
+
+                var result = await _logClient.SubmitTransactionAsync(transactions);
+                if (result.Value.Any(r => r.IsError))
                 {
-                    PartitionKey = PartitionKey,
-                    RowKey = RowKey(),
-                    Training = (TraningType)int.Parse(Training.Selection.ToString()),
-                    Coffea = int.Parse(Coffea.Selection.ToString()),
-                    Sauna = int.Parse(Sauna.Selection.ToString()),
-                };
-                var result = await _tableClient.UpsertEntityAsync(entity);
-                if (result.IsError)
-                {
-                    await Application.Current.MainPage.DisplayAlert("Error", $"Nått gick fel. Statuskod: {result.Status}", "OK");
+                    await Application.Current.MainPage.DisplayAlert("Error", $"Nått gick fel. Statuskoder: {string.Join(", ", result.Value.Select(r => r.Status))}", "OK");
                 }
                 else
                 {
-                    await Application.Current.MainPage.DisplayAlert("Sparat", $"Log för {entity.RowKey} sparat!", "OK");
+                    //await Application.Current.MainPage.DisplayAlert("Sparat", $"Log för {entity.RowKey} sparat!", "OK");
 
                 }
             }
@@ -65,19 +56,42 @@ namespace DailyLog.ViewModels
             }
         }
 
+        private static LogValueEntity CreateLogValueEntity(RadioButtonViewModel r)
+        {
+            return new LogValueEntity()
+            {
+                PartitionKey = GetDateNowString(),
+                RowKey = r.GroupName,
+                Selection = Convert.ToInt32(r.Selection)
+            };
+        }
+
         [RelayCommand]
         Task UpdateLog()
         {
             return Initialize();
         }
 
-        public DailyLogViewModel()
+        [RelayCommand]
+        async Task ReloadPage()
         {
-            _tableClient = new TableClient("DefaultEndpointsProtocol=https;AccountName=dailylogstorage;AccountKey=SbalUV4skdA3fxsfIond8qA6VCGWDtF8UVTTtB5hIZGN0jpHzmTgEL9zb+pl0YNkTTPateLz9atx+AStHzSS9g==;EndpointSuffix=core.windows.net", "DailyLog");
-            _tableClient.CreateIfNotExists();
+            await Shell.Current.GoToAsync(new ShellNavigationState(nameof(MyPage)));
         }
 
-        private static string RowKey()
+        public DailyLogViewModel(IMapper mapper)
+        {
+            var cs = "DefaultEndpointsProtocol=https;AccountName=dailylogstorage;AccountKey=SbalUV4skdA3fxsfIond8qA6VCGWDtF8UVTTtB5hIZGN0jpHzmTgEL9zb+pl0YNkTTPateLz9atx+AStHzSS9g==;EndpointSuffix=core.windows.net";
+
+            _logClient = new TableClient(cs, "DailyLog");
+            _logClient.CreateIfNotExists();
+
+            _surveyClient = new TableClient(cs, "Survey");
+            _surveyClient.CreateIfNotExists();
+
+            _mapper = mapper;
+        }
+
+        private static string GetDateNowString()
         {
             return DateTime.Now.ToString("yyyyMMdd");
         }
@@ -86,28 +100,42 @@ namespace DailyLog.ViewModels
         {
             IsBusy = true;
 
-            var result = await GetTodaysLog();
-            Health.Selection = result.Health.ToString();
-            Coffea.Selection = result.Coffea.ToString();
-            Sauna.Selection = result.Sauna.ToString();
-            Training.Selection = ((int)result.Training).ToString();
+            var survey = _surveyClient.QueryAsync<SurveyEntity>(select: new[] { nameof(SurveyEntity.RowKey), nameof(SurveyEntity.CustomContent) });
 
+            RadioButtons.Clear();
+            await foreach (var surveyRow in survey)
+            {
+                var radioButton = new RadioButtonViewModel()
+                {
+                    GroupName = surveyRow.RowKey
+                };
+                if (!string.IsNullOrEmpty(surveyRow.CustomContent))
+                {
+                    radioButton.Content = JsonSerializer.Deserialize<string[]>(surveyRow.CustomContent);
+                }
+                radioButton.Selection = await GetSelection(surveyRow.RowKey);
+
+                RadioButtons.Add(radioButton);
+            }
+
+            Symptoms.Selection = await GetSelection(nameof(Symptoms));
+            
             IsBusy = false;
         }
 
-        private async Task<LogEntity> GetTodaysLog()
+        private async Task<string> GetSelection(string name)
         {
             try
             {
-                var result = await _tableClient.GetEntityAsync<LogEntity>(PartitionKey, RowKey());
-                return result;
+                var result = await _logClient.GetEntityAsync<LogValueEntity>(GetDateNowString(), name, select: new[] { nameof(LogValueEntity.Selection) });
+                return result.Value.Selection.ToString();
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                Trace.WriteLine( $"Misslyckades med att hämta log. Error: {e.Message}");
+                Debug.WriteLine("Couldn't find existing survey data for: " + name);
             }
 
-            return new LogEntity();
+            return default;
         }
     }
 }
