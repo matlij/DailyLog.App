@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using DailyLog.Models;
+﻿using DailyLog.Models;
 using DailyLog.ViewModels;
 
 namespace DailyLog;
@@ -17,10 +16,15 @@ public static class MauiProgram
 				fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
 			});
 
-		builder.Services.AddSingleton<MainPage>();
+        var cs = "DefaultEndpointsProtocol=https;AccountName=dailylogstorage;AccountKey=SbalUV4skdA3fxsfIond8qA6VCGWDtF8UVTTtB5hIZGN0jpHzmTgEL9zb+pl0YNkTTPateLz9atx+AStHzSS9g==;EndpointSuffix=core.windows.net";
+        builder.Services.AddScoped(s => new TableClient<SurveyEntity>(cs, "Survey"));
+        builder.Services.AddScoped(s => new TableClient<LogValueEntity>(cs, "DailyLog"));
+
+        builder.Services.AddSingleton<MainPage>();
         builder.Services.AddScoped<DailyLogViewModel>();
 
-        builder.Services.AddTransient<MyPage>();
+        builder.Services.AddTransient<NewSurveyQueryPage>();
+        builder.Services.AddTransient<NewSurveyQueryViewModel>();
 
         builder.Services.AddAutoMapper(typeof(MapperProfile));
 

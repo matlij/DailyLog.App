@@ -5,7 +5,8 @@
              xmlns:viewmodel="clr-namespace:DailyLog.ViewModels"
              x:DataType="viewmodel:DailyLogViewModel">
 
-    <VerticalStackLayout VerticalOptions="Center">
+    <VerticalStackLayout VerticalOptions="Center"
+                         Margin="20">
         <StackLayout Margin="0, 30">
             <Label Text="Har du några symptom idag?"/>
             <StackLayout Orientation="Horizontal"
@@ -49,11 +50,8 @@
             <Button Command="{Binding SaveCommand}"
                         Text="Spara"
                         HorizontalOptions="Center" />
-            <Button Command="{Binding UpdateLogCommand}"
-                        Text="Hämta dagens"
-                        HorizontalOptions="Center" />
-            <Button Command="{Binding ReloadPageCommand}"
-                        Text="Reload Page"
+            <Button Command="{Binding NewSurveyQueryCommand}"
+                        Text="Lägg till fråga"
                         HorizontalOptions="Center" />
         </StackLayout>
     </VerticalStackLayout>

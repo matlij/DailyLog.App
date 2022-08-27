@@ -60,7 +60,13 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <MauiXaml Update="MyPage.xaml">
+	  <Compile Update="NewSurveyQueryPage.xaml.cs">
+	    <DependentUpon>NewSurveyQueryPage.xaml</DependentUpon>
+	  </Compile>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <MauiXaml Update="NewSurveyQueryPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	</ItemGroup>

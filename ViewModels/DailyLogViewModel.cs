@@ -12,7 +12,6 @@ namespace DailyLog.ViewModels
 
     public partial class DailyLogViewModel : ObservableObject
     {
-        private const string PartitionKey = "Key";
         private readonly TableClient _logClient;
         private readonly TableClient _surveyClient;
         private readonly IMapper _mapper;
@@ -56,39 +55,17 @@ namespace DailyLog.ViewModels
             }
         }
 
-        private static LogValueEntity CreateLogValueEntity(RadioButtonViewModel r)
-        {
-            return new LogValueEntity()
-            {
-                PartitionKey = GetDateNowString(),
-                RowKey = r.GroupName,
-                Selection = Convert.ToInt32(r.Selection)
-            };
-        }
-
         [RelayCommand]
-        Task UpdateLog()
+        async Task NewSurveyQuery()
         {
-            return Initialize();
+            await Shell.Current.GoToAsync(new ShellNavigationState(nameof(NewSurveyQueryPage)));
         }
 
-        [RelayCommand]
-        async Task ReloadPage()
+        public DailyLogViewModel(IMapper mapper, TableClient<LogValueEntity> logClient, TableClient<SurveyEntity> surveyClient)
         {
-            await Shell.Current.GoToAsync(new ShellNavigationState(nameof(MyPage)));
-        }
-
-        public DailyLogViewModel(IMapper mapper)
-        {
-            var cs = "DefaultEndpointsProtocol=https;AccountName=dailylogstorage;AccountKey=SbalUV4skdA3fxsfIond8qA6VCGWDtF8UVTTtB5hIZGN0jpHzmTgEL9zb+pl0YNkTTPateLz9atx+AStHzSS9g==;EndpointSuffix=core.windows.net";
-
-            _logClient = new TableClient(cs, "DailyLog");
-            _logClient.CreateIfNotExists();
-
-            _surveyClient = new TableClient(cs, "Survey");
-            _surveyClient.CreateIfNotExists();
-
             _mapper = mapper;
+            _logClient = logClient.Client;
+            _surveyClient = surveyClient.Client;
         }
 
         private static string GetDateNowString()
@@ -136,6 +113,16 @@ namespace DailyLog.ViewModels
             }
 
             return default;
+        }
+
+        private static LogValueEntity CreateLogValueEntity(RadioButtonViewModel r)
+        {
+            return new LogValueEntity()
+            {
+                PartitionKey = GetDateNowString(),
+                RowKey = r.GroupName,
+                Selection = Convert.ToInt32(r.Selection)
+            };
         }
     }
 }

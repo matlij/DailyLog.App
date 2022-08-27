@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="DailyLog.NewSurveyQueryPage"
+             Title="MyPage"
+             xmlns:viewmodel="clr-namespace:DailyLog.ViewModels"
+             x:DataType="viewmodel:NewSurveyQueryViewModel">
+    <VerticalStackLayout Padding="50"
+                         Spacing="50">
+        <Label 
+            Text="Lägg till fråga"
+            VerticalOptions="Center" 
+            HorizontalOptions="Center" 
+            FontSize="Large"/>
+
+        <Entry Placeholder="titel..."
+               ClearButtonVisibility="WhileEditing"
+               Text="{Binding Input}"/>
+
+        <Button Command="{Binding AddQueryCommand}"
+                Text="Spara"/>
+
+    </VerticalStackLayout>
+</ContentPage>

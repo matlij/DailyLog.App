@@ -6,6 +6,6 @@ public partial class AppShell : Shell
 	{
 		InitializeComponent();
 
-		Routing.RegisterRoute(nameof(MyPage), typeof(MyPage));
+		Routing.RegisterRoute(nameof(NewSurveyQueryPage), typeof(NewSurveyQueryPage));
 	}
 }
