@@ -1,5 +1,6 @@
 ﻿using DailyLog.Models;
 using DailyLog.ViewModels;
+using SkiaSharp.Views.Maui.Controls.Hosting;
 
 namespace DailyLog;
 
@@ -9,8 +10,9 @@ public static class MauiProgram
 	{
 		var builder = MauiApp.CreateBuilder();
 		builder
+            .UseSkiaSharp(true)
 			.UseMauiApp<App>()
-			.ConfigureFonts(fonts =>
+            .ConfigureFonts(fonts =>
 			{
 				fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
 				fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
