@@ -1,4 +1,5 @@
 ﻿using DailyLog.Models;
+using DailyLog.Pages;
 using DailyLog.ViewModels;
 using SkiaSharp.Views.Maui.Controls.Hosting;
 
@@ -27,6 +28,9 @@ public static class MauiProgram
 
         builder.Services.AddTransient<NewSurveyQueryPage>();
         builder.Services.AddTransient<NewSurveyQueryViewModel>();
+
+        builder.Services.AddTransient<ChartPage>();
+        builder.Services.AddTransient<ChartViewModel>();
 
         builder.Services.AddAutoMapper(typeof(MapperProfile));
 

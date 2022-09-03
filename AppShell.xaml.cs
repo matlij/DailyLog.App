@@ -1,4 +1,6 @@
-﻿namespace DailyLog;
+﻿using DailyLog.Pages;
+
+namespace DailyLog;
 
 public partial class AppShell : Shell
 {
@@ -7,5 +9,6 @@ public partial class AppShell : Shell
 		InitializeComponent();
 
 		Routing.RegisterRoute(nameof(NewSurveyQueryPage), typeof(NewSurveyQueryPage));
-	}
+        Routing.RegisterRoute(nameof(ChartPage), typeof(ChartPage));
+    }
 }

@@ -3,6 +3,7 @@ using Azure.Data.Tables;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DailyLog.Models;
+using DailyLog.Pages;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Text.Json;
@@ -59,6 +60,12 @@ namespace DailyLog.ViewModels
         async Task NewSurveyQuery()
         {
             await Shell.Current.GoToAsync(new ShellNavigationState(nameof(NewSurveyQueryPage)));
+        }
+
+        [RelayCommand]
+        async Task OpenChartPage()
+        {
+            await Shell.Current.GoToAsync(new ShellNavigationState(nameof(ChartPage)));
         }
 
         public DailyLogViewModel(IMapper mapper, TableClient<LogValueEntity> logClient, TableClient<SurveyEntity> surveyClient)

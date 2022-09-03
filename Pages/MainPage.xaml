@@ -53,6 +53,9 @@
             <Button Command="{Binding NewSurveyQueryCommand}"
                         Text="Lägg till fråga"
                         HorizontalOptions="Center" />
+            <Button Command="{Binding OpenChartPageCommand}"
+                        Text="Visa Historik"
+                        HorizontalOptions="Center" />
         </StackLayout>
     </VerticalStackLayout>
 
