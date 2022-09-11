@@ -17,5 +17,13 @@ public partial class MainPage : ContentPage
 		await _viewModel.Initialize();
 		base.OnAppearing();
 	}
+
+	private async void DatePicker_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+	{
+		if (_viewModel != null && _viewModel.Date > _viewModel.DateMinValue)
+		{
+	        await _viewModel.UpdateSelection();
+		}
+    }
 }
 

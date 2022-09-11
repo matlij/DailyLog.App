@@ -6,7 +6,14 @@
              x:DataType="viewmodel:DailyLogViewModel">
 
     <VerticalStackLayout VerticalOptions="Center"
-                         Margin="20">
+                         Margin="20"
+                         Padding="10">
+        <Label Text="Välj datum to vill logga för:"/>
+        <DatePicker Margin="10"
+                    MinimumDate="{Binding DateMinValue}"
+                    MaximumDate="{Binding DateMaxValue}"
+                    Date="{Binding Date}"
+                    PropertyChanged="DatePicker_PropertyChanged"/>
         <StackLayout Margin="0, 30">
             <Label Text="Har du några symptom idag?"/>
             <StackLayout Orientation="Horizontal"

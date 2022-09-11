@@ -17,11 +17,16 @@ namespace DailyLog.ViewModels
         private readonly TableClient _surveyClient;
         private readonly IMapper _mapper;
 
+        public DateTime DateMinValue { get; } = DateTime.Now.AddDays(-14);
+        public DateTime DateMaxValue { get; } = DateTime.Now;
         public RadioButtonViewModel Symptoms { get; set; } = new RadioButtonViewModel { GroupName = "Symptoms" };
         public ObservableCollection<RadioButtonViewModel> RadioButtons { get; set; } = new ObservableCollection<RadioButtonViewModel>();
 
         [ObservableProperty]
         bool _isBusy;
+
+        [ObservableProperty]
+        DateTime _date;
 
         [RelayCommand]
         async Task Save()
@@ -73,20 +78,21 @@ namespace DailyLog.ViewModels
             _mapper = mapper;
             _logClient = logClient.Client;
             _surveyClient = surveyClient.Client;
-        }
-
-        private static string GetDateNowString()
-        {
-            return DateTime.Now.ToString("yyyyMMdd");
+            Date = DateTime.Now;
         }
 
         public async Task Initialize()
         {
             IsBusy = true;
 
-            var survey = _surveyClient.QueryAsync<SurveyEntity>(select: new[] { nameof(SurveyEntity.RowKey), nameof(SurveyEntity.CustomContent) });
+            var survey = _surveyClient.QueryAsync<SurveyEntity>(select: new[] 
+            { 
+                nameof(SurveyEntity.RowKey), 
+                nameof(SurveyEntity.CustomContent) 
+            });
 
             RadioButtons.Clear();
+            var buttons = new List<RadioButtonViewModel>();
             await foreach (var surveyRow in survey)
             {
                 var radioButton = new RadioButtonViewModel()
@@ -97,21 +103,33 @@ namespace DailyLog.ViewModels
                 {
                     radioButton.Content = JsonSerializer.Deserialize<string[]>(surveyRow.CustomContent);
                 }
-                radioButton.Selection = await GetSelection(surveyRow.RowKey);
 
-                RadioButtons.Add(radioButton);
+                buttons.Add(radioButton);
             }
+
+            buttons.ForEach(b => RadioButtons.Add(b));
 
             Symptoms.Selection = await GetSelection(nameof(Symptoms));
             
             IsBusy = false;
         }
 
+        public async Task UpdateSelection()
+        {
+            Symptoms.Selection = await GetSelection(nameof(Symptoms));
+
+            foreach (var radioButton in RadioButtons)
+            {
+                radioButton.Selection = await GetSelection(radioButton.GroupName);
+                Trace.WriteLine($"Settings {radioButton.GroupName} to {radioButton.Selection}");
+            }
+        }
+
         private async Task<string> GetSelection(string name)
         {
             try
             {
-                var result = await _logClient.GetEntityAsync<LogValueEntity>(GetDateNowString(), name, select: new[] { nameof(LogValueEntity.Selection) });
+                var result = await _logClient.GetEntityAsync<LogValueEntity>(GetDateString(), name, select: new[] { nameof(LogValueEntity.Selection) });
                 return result.Value.Selection.ToString();
             }
             catch (Exception)
@@ -119,17 +137,21 @@ namespace DailyLog.ViewModels
                 Debug.WriteLine("Couldn't find existing survey data for: " + name);
             }
 
-            return default;
+            return default(int).ToString();
         }
 
-        private static LogValueEntity CreateLogValueEntity(RadioButtonViewModel r)
+        private LogValueEntity CreateLogValueEntity(RadioButtonViewModel r)
         {
             return new LogValueEntity()
             {
-                PartitionKey = GetDateNowString(),
+                PartitionKey = GetDateString(),
                 RowKey = r.GroupName,
                 Selection = Convert.ToInt32(r.Selection)
             };
         }
+
+        private string GetDateString() => Date == default 
+            ? DateTime.Now.ToString("yyyyMMdd")
+            : Date.ToString("yyyyMMdd");
     }
 }
