@@ -4,16 +4,27 @@
              x:Class="DailyLog.Pages.ChartPage"
              Title="ChartPage"
              xmlns:viewmodel="clr-namespace:DailyLog.ViewModels"
+             xmlns:models="clr-namespace:DailyLog.Models"
              xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.Maui;assembly=LiveChartsCore.SkiaSharpView.Maui"
              x:DataType="viewmodel:ChartViewModel">
-    <ContentPage.Content>
-        <Grid>
-            <lvc:CartesianChart
-                Series="{Binding Series}">
-            </lvc:CartesianChart>
-        </Grid>
-    </ContentPage.Content>
-</ContentPage>
+    <Grid RowDefinitions="*,*">
+        <lvc:CartesianChart Series="{Binding Series}">
+        </lvc:CartesianChart>
 
-<!--xmlns:viewmodel="clr-namespace:DailyLog.ViewModels"
-             x:DataType="viewmodel:ChartViewModel"-->
+        <StackLayout Grid.Row="1">
+            <CollectionView ItemsSource="{Binding Survey}"
+                            ItemsLayout="HorizontalList"
+                            SelectionMode="Multiple"
+                            SelectedItems="{Binding SelectedSurveyQueries}"
+                            SelectionChanged="CollectionView_SelectionChanged"
+                            Grid.Row="1">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="viewmodel:SurveyDto">
+                        <Label Text="{Binding Name}"/>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </StackLayout>
+
+    </Grid>
+</ContentPage>

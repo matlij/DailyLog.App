@@ -3,6 +3,7 @@ using Azure.Data.Tables;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DailyLog.Models;
+using DailyLog.Models.Constants;
 using DailyLog.Pages;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -10,7 +11,6 @@ using System.Text.Json;
 
 namespace DailyLog.ViewModels
 {
-
     public partial class DailyLogViewModel : ObservableObject
     {
         private readonly TableClient _logClient;
@@ -19,7 +19,7 @@ namespace DailyLog.ViewModels
 
         public DateTime DateMinValue { get; } = DateTime.Now.AddDays(-14);
         public DateTime DateMaxValue { get; } = DateTime.Now;
-        public RadioButtonViewModel Symptoms { get; set; } = new RadioButtonViewModel { GroupName = "Symptoms" };
+        public RadioButtonViewModel Symptoms { get; set; } = new RadioButtonViewModel { GroupName = SurveyConstants.Symptoms };
         public ObservableCollection<RadioButtonViewModel> RadioButtons { get; set; } = new ObservableCollection<RadioButtonViewModel>();
 
         [ObservableProperty]
@@ -85,10 +85,10 @@ namespace DailyLog.ViewModels
         {
             IsBusy = true;
 
-            var survey = _surveyClient.QueryAsync<SurveyEntity>(select: new[] 
-            { 
-                nameof(SurveyEntity.RowKey), 
-                nameof(SurveyEntity.CustomContent) 
+            var survey = _surveyClient.QueryAsync<SurveyEntity>(select: new[]
+            {
+                nameof(SurveyEntity.RowKey),
+                nameof(SurveyEntity.CustomContent)
             });
 
             RadioButtons.Clear();
@@ -110,7 +110,7 @@ namespace DailyLog.ViewModels
             buttons.ForEach(b => RadioButtons.Add(b));
 
             Symptoms.Selection = await GetSelection(nameof(Symptoms));
-            
+
             IsBusy = false;
         }
 
@@ -150,7 +150,7 @@ namespace DailyLog.ViewModels
             };
         }
 
-        private string GetDateString() => Date == default 
+        private string GetDateString() => Date == default
             ? DateTime.Now.ToString("yyyyMMdd")
             : Date.ToString("yyyyMMdd");
     }

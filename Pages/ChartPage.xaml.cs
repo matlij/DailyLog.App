@@ -18,4 +18,12 @@ public partial class ChartPage : ContentPage
 
         base.OnAppearing();
 	}
+
+	private async void CollectionView_SelectionChanged(object sender, SelectionChangedEventArgs e)
+	{
+		if (_viewModel != null)
+		{
+	        await _viewModel.UpdateChart(14);
+		}
+	}
 }
