@@ -42,7 +42,10 @@ namespace DailyLog.ViewModels
         public async Task Init()
         {
             Survey.Clear();
-            Survey.Add(new SurveyDto { Name = SurveyConstants.Symptoms });
+
+            var symptoms = new SurveyDto { Name = SurveyConstants.Symptoms };
+            SelectedSurveyQueries.Add(symptoms);
+            Survey.Add(symptoms);
 
             var survey = _surveyClient.QueryAsync<SurveyEntity>(select: new[] { "RowKey" });
             await foreach (var item in survey)
@@ -79,7 +82,7 @@ namespace DailyLog.ViewModels
                 var dateCursor = startDate;
                 for (int i = 0; i <= daysOld; i++)
                 {
-                    var value = entitiesByType.FirstOrDefault(e => ParseDate(e.PartitionKey).Day == dateCursor.Day)?.Selection ?? null;
+                    var value = entitiesByType.FirstOrDefault(e => ChartViewModel.ParseDate(e.PartitionKey).Day == dateCursor.Day)?.Selection ?? null;
                     values.Add(new DateTimePoint(dateCursor, value));
                     dateCursor = dateCursor.AddDays(1);
                 }
@@ -88,13 +91,14 @@ namespace DailyLog.ViewModels
                     Name = entitiesByType.Key,
                     Values = values,
                     Fill = null,
-                    GeometrySize = entitiesByType.Key == Models.Constants.SurveyConstants.Symptoms ? 40 : 10
+                    GeometrySize = entitiesByType.Key == SurveyConstants.Symptoms ? 40 : 10
                 });
             }
 
             Series = series;
         }
-        private DateTime ParseDate(string date)
+
+        private static DateTime ParseDate(string date)
         {
             ReadOnlySpan<char> span = date;
             var year = int.Parse(span.Slice(0, 4));

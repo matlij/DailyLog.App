@@ -15,7 +15,7 @@
             <CollectionView ItemsSource="{Binding Survey}"
                             ItemsLayout="HorizontalList"
                             SelectionMode="Multiple"
-                            SelectedItems="{Binding SelectedSurveyQueries}"
+                            SelectedItems="{Binding SelectedSurveyQueries, Mode=TwoWay}"
                             SelectionChanged="CollectionView_SelectionChanged"
                             Grid.Row="1">
                 <CollectionView.ItemTemplate>
