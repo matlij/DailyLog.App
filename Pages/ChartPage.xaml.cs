@@ -23,7 +23,7 @@ public partial class ChartPage : ContentPage
 	{
 		if (_viewModel != null)
 		{
-	        await _viewModel.UpdateChart(14);
+	        await _viewModel.UpdateChart(28);
 		}
 	}
 }
