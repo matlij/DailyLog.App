@@ -21,7 +21,7 @@ namespace DailyLog.ViewModels
         {
                 new Axis
                 {
-                    Labeler = value => new DateTime((long) value).ToString("MMMM dd"),
+                    Labeler = value => new DateTime((long) value).ToString("MMM dd"),
                     LabelsRotation = 15,
         
                     // when using a date time type, let the library know your unit 
